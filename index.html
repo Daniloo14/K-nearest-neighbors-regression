@@ -144,8 +144,22 @@
       const y = e.clientY - rect.top;
       // Predict value using KNN
       const predValue = predictValue(x, y, k);
+      // Find k nearest neighbors
+      const sorted = points.slice().sort((a, b) => distance({x, y}, a) - distance({x, y}, b));
+      const neighbors = sorted.slice(0, k);
       points.push({ x, y, value: predValue, isPredicted: true });
       drawCanvas();
+      // Draw lines connecting new point to its k nearest neighbors
+      ctx.save();
+      ctx.strokeStyle = '#0074d9';
+      ctx.lineWidth = 1.5;
+      for (const neighbor of neighbors) {
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(neighbor.x, neighbor.y);
+        ctx.stroke();
+      }
+      ctx.restore();
     });
 
     // --- User Controls ---
